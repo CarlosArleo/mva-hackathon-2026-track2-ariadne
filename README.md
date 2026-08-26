@@ -1,86 +1,281 @@
 
-### Mathematical & Topological Foundations
+# Genotype-Matched Synthetic Lethality Targeting in Mosaic Variegated Aneuploidy (MVA)
 
-1. **Interactome Physical Proximity (Menche $s_{AB}$):**Evaluated over the human physical interactome (BioGRID; 957,872 edges). Distance between disease modules $A$ and $B$ is scored as:
-
-   $$
-   s_{AB} = \langle d_{AB} \rangle - \frac{1}{2}\left(\langle d_{AA} \rangle + \langle d_{BB} \rangle\right)
-   $$
-
-   Across 18,512 novel orphan disease pairs, ARIADNE achieves an **11.4× enrichment** in physical proximity ($z < -2.0$, $p < 0.0001$) against a size-matched null.
-2. **Von Neumann Spectral Entropy ($S_{VNE}$):**From the normalized graph Laplacian $L = I - D^{-1/2}AD^{-1/2}$ and density matrix $\rho = L/\text{Tr}(L)$, spectral entropy is calculated to penalize diffuse housekeeping hubs:
-
-   $$
-   S_{VNE}(G) = -\text{Tr}(\rho \ln \rho) = -\sum_{i} \lambda_i \ln \lambda_i
-   $$
-3. **Poincaré Specificity Radius ($r$):**
-   Each candidate node is placed radially based on pathway specificity $w_{\text{spec}} = 1/\text{pathwaySize}$:
-
-   $$
-   r = 1.0 - \frac{1.0}{1.0 + 5.0 w_{\text{spec}}}, \quad r \in [0.08, 0.92]
-   $$
-
-   High-specificity bottlenecks reach the outer disc rim ($r \ge 0.50$), avoiding promiscuous generic hubs.
+**Submitter:** Carlos Arleo · Aitiopoietic Systems
+**Track:** Track 2 — Drug Repurposing / Repositioning
+**Hackathon:** *Rare Disease, Real Kid: The MVA Hackathon 2026*
+**Methodology:** ARIADNE — Constitutional Physics / Neurosymbolic Causal-Network Mapping
+**License:** CC BY 4.0
 
 ---
 
-## 3. The Genotype-Matched Decision Tree & Drug Candidates
+## Executive Summary
 
-To satisfy both maximum translational precision and the hackathon requirement for market-accessible agents, we propose an **FDA-Approved Proxy** and an **Ideal Clinical-Stage Precision Candidate** for each branch:
+Mosaic Variegated Aneuploidy (MVA) is an ultra-rare and genetically heterogeneous disorder. Its causal genes encode structural scaffolds, centrosome-assembly components, and pseudokinases, making direct pharmacological restoration of the underlying defects highly challenging.
 
-| Feature                             | Branch A: Checkpoint-Signaling Deficiency                                          | Branch B: Centrosome-Structural Deficiency                                                             |
-| :---------------------------------- | :--------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
-| **Confirmed Genes**           | *BUB1B*, *BUB1*, *BUB3*, *TRIP13*                                          | *CEP57*, *CEP192*                                                                                  |
-| **Primary Defect**            | Spindle Assembly Checkpoint (SAC) failure                                          | Centrosome duplication / structural integrity loss                                                     |
-| **Downstream Stress State**   | Chronic replication-fork stalling and hyperploid DNA damage                        | Supernumerary centrosomes & multipolar spindle stress                                                  |
-| **Synthetic Lethal Target**   | **ATR Kinase / PARP Axis**                                                   | **KIF18A Spindle Motor Axis**                                                                    |
-| **Market-Approved Candidate** | **Olaparib** (FDA-approved PARP inhibitor)                                   | **Paclitaxel** (FDA-approved microtubule stabilizer)                                             |
-| **Ideal Clinical Candidate**  | **Ceralasertib (AZD6738)** (Selective oral ATR inhibitor in advanced trials) | **Sovilnesib (AMG650)** (Selective oral KIF18A inhibitor; FDA Fast Track)                        |
-| **Translational Evidence**    | Aneuploid/hyperploid cells selectively collapse upon ATR/PARP inhibition.          | Cells with chromosomal instability depend on KIF18A to cluster extra centrosomes into viable spindles. |
+A second challenge is diagnostic uncertainty: selecting a therapeutic strategy around a single candidate gene—such as *BUB1B*—before the causal variant is resolved in Track 1 creates a major point of failure.
+
+This project therefore takes a different approach.
+
+Rather than attempting to restore the defective structural protein, we identify **convergent downstream vulnerabilities** that may create exploitable **synthetic-lethal dependencies** across different MVA genotypes.
+
+Using the **ARIADNE neurosymbolic framework**, we organize MVA into two mechanistic branches:
+
+1. **Branch A — Checkpoint Defect**
+   Replication stress and chromosomal instability → **ATR / PARP inhibition**
+2. **Branch B — Centrosome Defect**
+   Centrosome amplification and spindle-clustering dependence → **KIF18A / spindle perturbation**
+
+The resulting framework is a **genotype-matched decision tree**: once the causal variant is established, the patient can be routed to the corresponding downstream vulnerability rather than forcing treatment selection from an unconfirmed gene hypothesis.
+
+---
+
+## 1. The Biological Trap: Why We Do Not Guess the Gene
+
+MVA can result from diverse genetic lesions, including:
+
+* **MVA1:** *BUB1B* — spindle assembly checkpoint kinase/pseudokinase
+* **MVA2:** *CEP57* — centrosomal structural scaffold
+* **MVA3:** *TRIP13* — AAA+ ATPase regulating the mitotic checkpoint complex
+* **Documented drivers:** *BUB1*, *BUB3*, *CEP192*, and *MAD1L1*
+
+These proteins do not provide conventional enzymatic pockets that readily support standard small-molecule agonist rescue. Attempting to pharmacologically "restore" a missing or truncated structural component is therefore biologically and pharmacologically difficult.
+
+### Our approach
+
+Instead of targeting the damaged protein directly, we map the **convergent cellular stress states** generated by these defects.
+
+Because the patient's causal variant is being resolved through Track 1, the proposed treatment strategy is deliberately **bifurcated**:
+
+```text
+                    [ Confirmed Causal Variant — Track 1 ]
+                                      │
+                 ┌────────────────────┴────────────────────┐
+                 ▼                                         ▼
+      [ Branch A: Checkpoint ]                 [ Branch B: Centrosome ]
+    (BUB1B, BUB1, BUB3, TRIP13)                    (CEP57, CEP192)
+                 │                                         │
+       Replication Stress                         Centrosome Amplification
+      & High-Grade Aneuploidy                    & Spindle-Clustering Stress
+                 │                                         │
+       Synthetic Lethality:                       Synthetic Lethality:
+       ATR / PARP Inhibition                     KIF18A Spindle Disruption
+                 │                                         │
+       ┌─────────┴─────────┐                       ┌────────┴─────────┐
+       ▼                   ▼                       ▼                  ▼
+ [Market-Approved]   [Clinical-Stage]       [Market-Approved]  [Clinical-Stage]
+     Olaparib        Ceralasertib              Paclitaxel        Sovilnesib
+                     (AZD6738)                                   (AMG650)
+```
+
+---
+
+## 2. Methodology: ARIADNE & Constitutional Physics
+
+Candidate pathway convergences and network topologies were identified using **ARIADNE**, a neurosymbolic engine built around the principle:
+
+> **The generator is never the judge.**
+
+An LLM is used to propose typed causal graphs, but those proposals are not accepted on model judgment alone. Deterministic code, curated biological databases, and hard biological constraints independently evaluate, score, or veto proposed relationships.
+
+```text
+   ┌───────────────────────┐       Typed 5-Step Schema       ┌───────────────────────┐
+   │   Stochastic LLM      │ ──────────────────────────────> │  Deterministic Code   │
+   │   (Constrained        │                                  │  (The Sole Arbiter)   │
+   │    Mutator)           │                                  │                       │
+   └───────────────────────┘                                  └───────────────────────┘
+                                                                       │
+                                                                       ▼
+                                  ┌──────────────────────────────────────────────┐
+                                  │ Hard Biological Vetoes & Graph Descriptors   │
+                                  ├──────────────────────────────────────────────┤
+                                  │ • gnomAD v4 BA1 allele-frequency check        │
+                                  │   (f > 5% → Refuted)                          │
+                                  │ • ClinGen LoF / GoF dosage-directionality     │
+                                  │   guard                                       │
+                                  │ • Monarch KG v3 live gene-integrity audit    │
+                                  │ • Menche interactome separation (s_AB)        │
+                                  │   over BioGRID                                │
+                                  │ • Von Neumann spectral entropy (S_VNE)       │
+                                  │   and Poincaré radius (r)                     │
+                                  └──────────────────────────────────────────────┘
+```
+
+### Mathematical & Topological Foundations
+
+#### 1. Interactome Physical Proximity — Menche `s_AB`
+
+Physical proximity between disease modules is evaluated across the human physical interactome using BioGRID.
+
+The separation score is:
+
+$$
+s_{AB} =
+\langle d_{AB} \rangle -
+\frac{1}{2}
+\left(
+\langle d_{AA} \rangle +
+\langle d_{BB} \rangle
+\right)
+$$
+
+Across 18,512 novel orphan-disease pairs, ARIADNE achieves an **11.4× enrichment** in physical proximity for pairs with `z < -2.0` and `p < 0.0001` against a size-matched null.
+
+#### 2. Von Neumann Spectral Entropy — `S_VNE`
+
+Using the normalized graph Laplacian:
+
+$$
+L = I - D^{-1/2} A D^{-1/2}
+$$
+
+and density matrix:
+
+$$
+\rho = \frac{L}{\mathrm{Tr}(L)}
+$$
+
+spectral entropy is calculated as:
+
+$$
+S_{VNE}(G)
+==========
+
+# -\mathrm{Tr}(\rho \ln \rho)
+
+-\sum_i \lambda_i \ln \lambda_i
+$$
+
+This metric is used to penalize diffuse, generic housekeeping hubs.
+
+#### 3. Poincaré Specificity Radius — `r`
+
+Candidate nodes are positioned according to pathway specificity:
+
+$$
+w_{\mathrm{spec}} = \frac{1}{\mathrm{pathwaySize}}
+$$
+
+with radial position:
+
+$$
+r =
+1 -
+\frac{1}
+{1 + 5.0 \cdot w_{\mathrm{spec}}},
+\qquad
+r \in [0.08, 0.92]
+$$
+
+High-specificity bottlenecks reach the outer region of the disc (`r ≥ 0.50`), helping avoid promiscuous generic hubs.
+
+---
+
+## 3. Genotype-Matched Decision Tree & Drug Candidates
+
+To balance **translational precision** with the hackathon requirement for market-accessible agents, each mechanistic branch contains two candidate classes:
+
+* **Market-approved proxy:** an existing approved drug that can serve as a practical translational starting point.
+* **Ideal clinical-stage candidate:** a more mechanistically precise agent currently in clinical development.
+
+| Feature                             | Branch A: Checkpoint-Signaling Deficiency                                           | Branch B: Centrosome-Structural Deficiency                                                           |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Confirmed genes**           | *BUB1B*, *BUB1*, *BUB3*, *TRIP13*                                           | *CEP57*, *CEP192*                                                                                |
+| **Primary defect**            | Spindle Assembly Checkpoint (SAC) failure                                           | Centrosome duplication / structural integrity loss                                                   |
+| **Downstream stress state**   | Chronic replication-fork stalling and hyperploid DNA damage                         | Supernumerary centrosomes and multipolar spindle stress                                              |
+| **Synthetic-lethal target**   | **ATR kinase / PARP axis**                                                    | **KIF18A spindle motor axis**                                                                  |
+| **Market-approved candidate** | **Olaparib** — FDA-approved PARP inhibitor                                   | **Paclitaxel** — FDA-approved microtubule stabilizer                                          |
+| **Ideal clinical candidate**  | **Ceralasertib (AZD6738)** — selective oral ATR inhibitor in advanced trials | **Sovilnesib (AMG650)** — selective oral KIF18A inhibitor; FDA Fast Track                     |
+| **Translational rationale**   | Aneuploid/hyperploid cells may selectively collapse under ATR/PARP inhibition.      | Chromosomally unstable cells may depend on KIF18A to cluster extra centrosomes into viable spindles. |
+
+### Decision Rule
+
+The therapeutic hypothesis is therefore:
+
+**Resolve genotype → identify mechanistic branch → identify downstream vulnerability → test the corresponding synthetic-lethal dependency.**
+
+This avoids prematurely committing to a single causal gene while retaining a concrete therapeutic path once the genotype is known.
 
 ---
 
 ## 4. Decision-Grade Wet-Lab Falsification Protocols
 
-Each candidate is paired with a concrete, wet-lab-grade falsification protocol to be executed on patient-derived cell models under the hackathon’s IRB protocol (#20252010):
+Each proposed therapeutic hypothesis is paired with an explicit wet-lab falsification strategy using patient-derived cellular models under the hackathon's IRB protocol (`#20252010`).
 
-### Protocol for Branch A (e.g., *BUB1B* confirmed)
+The objective is not simply to demonstrate an effect, but to establish a **decision-grade test that can disprove the hypothesis**.
 
-* **Biological Model:** Patient-derived fibroblasts harboring the confirmed variant vs. CRISPR-isogenic reverted control lines.
-* **Perturbation:** Dose-response curve of Ceralasertib ($0.01 - 10\,\mu\text{M}$) $\pm$ Olaparib.
-* **Assays & Endpoints:** Neutral Comet assay / $\gamma$-H2AX immunoblotting (double-strand break accumulation) and single-cell sequencing/FISH (aneuploid cell clearance vs. diploid survival).
-* **Falsification Threshold:** If the candidate demonstrates **no statistically significant dose-dependent reduction in aneuploid cell viability relative to vehicle-treated controls ($p > 0.05$)**, the hypothesis is disproven.
+### Branch A — Checkpoint Defect
 
-### Protocol for Branch B (e.g., *CEP57* confirmed)
+**Example:** *BUB1B* confirmed
 
-* **Biological Model:** Patient-derived fibroblasts harboring the confirmed centrosome lesion vs. isogenic controls.
-* **Perturbation:** Dose-response curve of Sovilnesib ($1 - 1000\,\text{nM}$) $\pm$ low-dose Paclitaxel.
-* **Assays & Endpoints:** Immunofluorescence high-content imaging for multipolar spindle formation, mitotic arrest duration, and Annexin V/PI apoptosis in centrosome-amplified cells.
-* **Falsification Threshold:** If Sovilnesib **fails to induce multipolar spindle catastrophe and selectively eliminate cells with $>2$ centrosomes ($p > 0.05$)**, the hypothesis is disproven.
+* **Biological model:** Patient-derived fibroblasts carrying the confirmed variant versus CRISPR-isogenic reverted control lines.
+* **Perturbation:** Dose-response curve of Ceralasertib (`0.01–10 µM`) ± Olaparib.
+* **Assays / endpoints:**
+
+  * Neutral Comet assay
+  * γ-H2AX immunoblotting
+  * Single-cell sequencing / FISH
+  * Assessment of aneuploid-cell clearance versus diploid-cell survival
+* **Falsification threshold:** If the candidate produces no statistically significant dose-dependent reduction in aneuploid-cell viability relative to vehicle-treated controls (`p > 0.05`), the hypothesis is considered disproven.
+
+### Branch B — Centrosome Defect
+
+**Example:** *CEP57* confirmed
+
+* **Biological model:** Patient-derived fibroblasts carrying the confirmed centrosome lesion versus isogenic controls.
+* **Perturbation:** Dose-response curve of Sovilnesib (`1–1000 nM`) ± low-dose Paclitaxel.
+* **Assays / endpoints:**
+
+  * High-content immunofluorescence imaging
+  * Multipolar spindle formation
+  * Mitotic arrest duration
+  * Annexin V / PI apoptosis
+  * Selective response of centrosome-amplified cells
+* **Falsification threshold:** If Sovilnesib fails to induce multipolar spindle catastrophe and selectively eliminate cells with more than two centrosomes (`p > 0.05`), the hypothesis is considered disproven.
 
 ---
 
-## 5. Innovation, Impact, and Scalability
+## 5. Innovation, Impact & Scalability
 
-1. **Innovation (25%):** Moves beyond standard single-variant association by applying neurosymbolic interactome mapping to establish synthetic lethality in an ultra-rare monogenic context.
-2. **Scientific Rigor (35%):** Avoids speculative claims of drugging undruggable structural proteins; incorporates deterministic biological vetoes (0% post-audit fabrication rate); accounts for Track 1 uncertainty.
-3. **Potential Impact (25%):** Offers immediately actionable therapeutic strategies (via approved proxies) and high-precision clinical candidates (Sovilnesib holds Fast Track for Chromosomal Instability).
-4. **Scalability (15%):** The two-part pipeline (interactome mapping + genotype-branch decision rule) generalizes directly across the **~6,569 rare diseases** in the MONDO corpus.
+### Innovation — 25%
+
+Moves beyond conventional single-variant association by applying **neurosymbolic interactome mapping** to identify potential synthetic-lethal vulnerabilities in an ultra-rare monogenic context.
+
+### Scientific Rigor — 35%
+
+Avoids speculative attempts to pharmacologically rescue undruggable structural proteins and instead applies deterministic biological vetoes. The framework also explicitly accounts for uncertainty in the Track 1 genotype-resolution process.
+
+### Potential Impact — 25%
+
+Provides both:
+
+* **Immediately actionable therapeutic proxies** through approved agents; and
+* **Higher-precision clinical candidates**, including Sovilnesib for the proposed KIF18A dependency.
+
+### Scalability — 15%
+
+The two-part architecture—
+
+**interactome mapping + genotype-conditioned decision rules**
+
+—is designed to generalize across rare diseases represented in the MONDO corpus, including the approximately **6,569 rare diseases** referenced by this submission.
 
 ---
 
-## Data Privacy & Compliance Statement
+## Data Privacy & Compliance
 
-In strict compliance with the MVA Hackathon 2026 Rules and WCG IRB Protocol #20252010:
+This project follows the MVA Hackathon 2026 rules and **WCG IRB Protocol #20252010**.
 
-* No patient-identifying data, individual-level sequence reads (FASTQ), or variant call files (VCF/BAM) are stored, processed, or hosted in this repository.
-* All analyses utilize public interactomes, open knowledge graphs, and published literature.
+* No patient-identifying information is stored, processed, or hosted in this repository.
+* No individual-level sequencing reads (`FASTQ`) are stored or processed.
+* No variant call files (`VCF` / `BAM`) are stored or processed.
+* Analyses rely on public interactomes, open knowledge graphs, and published literature.
 
 ---
 
 ## Mandatory Acknowledgement
 
-> *"This work was made possible through the Hackathon, organized by Sage Bionetworks in partnership with the MVA Society, Hugging Face, and BEACON (The Benchmarking, Evaluation, and Assessment Consortium for Science), with prize sponsorship from AWS and Anthropic. We are deeply grateful to the child and their family who generously contributed their data and their story to advance research into this rare disease. We acknowledge their trust in making this Hackathon possible."*
+> This work was made possible through the Hackathon, organized by Sage Bionetworks in partnership with the MVA Society, Hugging Face, and BEACON (The Benchmarking, Evaluation, and Assessment Consortium for Science), with prize sponsorship from AWS and Anthropic. We are deeply grateful to the child and their family who generously contributed their data and their story to advance research into this rare disease. We acknowledge their trust in making this Hackathon possible.
 
 ---
 
